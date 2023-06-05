@@ -4,15 +4,31 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack",
+    "compile": "tsc && npm run build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "typescript": "^5.0.4"
+    "@types/webfontloader": "^1.6.35",
+    "typescript": "^5.1.3",
+    "webpack-cli": "^5.1.1"
   },
   "dependencies": {
+    "@types/css-font-loading-module": "^0.0.8",
+    "@types/pixi.js": "^5.0.0",
+    "fontfaceobserver": "^2.3.0",
+    "pixi.js": "^7.2.4",
+    "webfontloader": "^1.6.28",
     "webpack": "^5.84.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shia5347/AbandonedTerminal.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shia5347/AbandonedTerminal/issues"
+  },
+  "homepage": "https://github.com/shia5347/AbandonedTerminal#readme"
 }
