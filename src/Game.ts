@@ -28,7 +28,6 @@ const app = new PIXI.Application<HTMLCanvasElement>({ width: SCREEN_WIDTH, heigh
 PIXI.settings.ROUND_PIXELS = true
 PIXI.settings.RESOLUTION = 4
 
-
 //Scaling
 const scaleX: number = SCREEN_WIDTH/WIDTH
 const scaleY: number = SCREEN_HEIGHT/HEIGHT
@@ -53,7 +52,8 @@ let terminalText: PIXI.Text = new PIXI.Text("@#: Loading...", {
 	fontSize: 24,
 	fill: '#12FF00FF',
 	wordWrap: true,
-	wordWrapWidth: 42 + (SCREEN_WIDTH-42)
+	wordWrapWidth: 42 + (SCREEN_WIDTH-42),
+	lineHeight: 42 
 
 });
 
@@ -62,34 +62,36 @@ let charHidingRec = new PIXI.Graphics() //This rectangle will slowly show the ch
 const textOffsetX = 42
 const textOffsetY = 42
 
-charHidingRec.beginFill('#001521')
+charHidingRec.beginFill('#00ffff')
 charHidingRec.drawRect(textOffsetX,textOffsetY,SCREEN_WIDTH,32)
 charHidingRec.endFill()
 
 terminalText.position.set(textOffsetX,textOffsetY)
-
 
 var terminalCharIndex: number = 0
 const charWidth = PIXI.TextMetrics.measureText("A",terminalText.style).width //Only use this with monospace fonts
 const newLineDist: number = textOffsetY //Distance between everyline on the terminal
 //Outputs next letter in the sequence of the string.
 function updateTerminalText(text: string,pixiText: PIXI.Text): void {
+	pixiText.text = text
+	var tempText: string = text
 	if(terminalCharIndex < text.length) {
 		charHidingRec.x += charWidth
 		terminalCharIndex++
 	} else {
 		
 		//Reset the position of the character hiding rectangle	
-		//charHidingRec.x = textOffsetX
-		//charHidingRec.y += newLineDist //Move the rectangle to a new line		
+		charHidingRec.x = 0 
+		charHidingRec.y = textOffsetY //Move the rectangle to a new line		
+		var concatenatedStr: string = "Haha"
+		terminalText.text = text + "\n"+concatenatedStr
+		terminalText.updateText(true)
+
 
 	}
 
 }
 
-const transparentStyle = new PIXI.TextStyle({
-	fill: 'rgba(0,0,0,0)'
-})
 
 terminalText.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST
 terminalText.resolution = 8 
@@ -108,7 +110,8 @@ app.ticker.add((delta) => {
 	if(elaspedTime >= terminalCharOutputThreshold) {
 		console.log("2 seconds have passed")
 
-		updateTerminalText("@#: Help! Save me! I am trapped!", terminalText)	
+		updateTerminalText("Sinusodial OS v1.0. Please wait...", terminalText)	
+
 		elaspedTime = 0
 	}	
 
