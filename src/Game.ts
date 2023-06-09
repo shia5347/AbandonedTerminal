@@ -24,6 +24,7 @@ const SCREEN_HEIGHT: number = 600
 
 //App settings
 const app = new PIXI.Application<HTMLCanvasElement>({ width: SCREEN_WIDTH, height: SCREEN_HEIGHT, background: '#001521', resolution: window.devicePixelRatio, antialias: false })
+
 PIXI.settings.ROUND_PIXELS = true
 PIXI.settings.RESOLUTION = 4
 
@@ -32,6 +33,7 @@ PIXI.settings.RESOLUTION = 4
 const scaleX: number = SCREEN_WIDTH/WIDTH
 const scaleY: number = SCREEN_HEIGHT/HEIGHT
 const scale: number = Math.min(scaleX,scaleY)
+app.stage.scale.set(scale)
 
 const canvas = document.getElementById('pixi-canvas')
 if(canvas == null) {
@@ -41,7 +43,6 @@ if(canvas == null) {
 }
 
 var inputBar: PIXI.Graphics = new PIXI.Graphics()
-inputBar.scale.set(scale)
 inputBar.beginFill('#000000')
 inputBar.drawRect(32,HEIGHT-BAR_HEIGHT-16,BAR_WIDTH,BAR_HEIGHT)
 
@@ -49,7 +50,7 @@ inputBar.drawRect(32,HEIGHT-BAR_HEIGHT-16,BAR_WIDTH,BAR_HEIGHT)
 let terminalText: PIXI.Text = new PIXI.Text("@#: Loading...", {
 
 	fontFamily: "pixelFont",
-	fontSize: 24 * scale,
+	fontSize: 24,
 	fill: '#12FF00FF',
 	wordWrap: true,
 	wordWrapWidth: 42 + (SCREEN_WIDTH-42)
