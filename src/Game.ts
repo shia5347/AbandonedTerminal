@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import { TerminalOutputTextMG } from './TerminalOutputTextMG'
 
 var FontFaceObserver = require('fontfaceobserver')
 
@@ -19,8 +20,8 @@ const BAR_WIDTH: number = WIDTH - 64
 const BAR_HEIGHT: number = 47 
 
 //Window size
-const SCREEN_WIDTH: number = 800
-const SCREEN_HEIGHT: number = 600
+const SCREEN_WIDTH: number = 1024
+const SCREEN_HEIGHT: number = 768
 
 //App settings
 const app = new PIXI.Application<HTMLCanvasElement>({ width: SCREEN_WIDTH, height: SCREEN_HEIGHT, background: '#001521', resolution: window.devicePixelRatio, antialias: false })
@@ -46,13 +47,13 @@ inputBar.beginFill('#000000')
 inputBar.drawRect(32,HEIGHT-BAR_HEIGHT-16,BAR_WIDTH,BAR_HEIGHT)
 
 //Terminal text
-let terminalText: PIXI.Text = new PIXI.Text("@#: Loading...", {
+let terminalText: PIXI.Text = new PIXI.Text("", {
 
 	fontFamily: "pixelFont",
 	fontSize: 24,
 	fill: '#12FF00FF',
 	wordWrap: true,
-	wordWrapWidth: 42 + (SCREEN_WIDTH-42),
+	wordWrapWidth: 501 ,
 	lineHeight: 42 
 
 });
@@ -62,37 +63,16 @@ let charHidingRec = new PIXI.Graphics() //This rectangle will slowly show the ch
 const textOffsetX = 42
 const textOffsetY = 42
 
-charHidingRec.beginFill('#00ffff')
-charHidingRec.drawRect(textOffsetX,textOffsetY,SCREEN_WIDTH,32)
+charHidingRec.beginFill('#001521')
+charHidingRec.drawRect(textOffsetX,textOffsetY,SCREEN_WIDTH,33)
 charHidingRec.endFill()
 
 terminalText.position.set(textOffsetX,textOffsetY)
 
-var terminalCharIndex: number = 0
-const charWidth = PIXI.TextMetrics.measureText("A",terminalText.style).width //Only use this with monospace fonts
+//terminalText.text = "Sinosodial OS v1.0. Please wait..." 
 const newLineDist: number = textOffsetY //Distance between everyline on the terminal
-//Outputs next letter in the sequence of the string.
-function updateTerminalText(text: string,pixiText: PIXI.Text): void {
-	pixiText.text = text
-	var tempText: string = text
-	if(terminalCharIndex < text.length) {
-		charHidingRec.x += charWidth
-		terminalCharIndex++
-	} else {
-		
-		//Reset the position of the character hiding rectangle	
-		charHidingRec.x = 0 
-		charHidingRec.y = textOffsetY //Move the rectangle to a new line		
-		var concatenatedStr: string = "Haha"
-		terminalText.text = text + "\n"+concatenatedStr
-		terminalText.updateText(true)
 
-
-	}
-
-}
-
-
+//Terminal text options
 terminalText.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST
 terminalText.resolution = 8 
 
@@ -101,16 +81,18 @@ app.stage.addChild(terminalText)
 app.stage.addChild(charHidingRec)
 app.stage.addChild(inputBar)
 
-const terminalCharOutputThreshold: number = 2 //2 seconds
+const terminalCharOutputThreshold: number = 1/10 //1/20 seconds
 var elaspedTime = 0
+
 
 app.ticker.add((delta) => {
 
-	elaspedTime += delta
-	if(elaspedTime >= terminalCharOutputThreshold) {
-		console.log("2 seconds have passed")
+	const seconds = delta * 0.01
 
-		updateTerminalText("Sinusodial OS v1.0. Please wait...", terminalText)	
+	elaspedTime += seconds
+	if(elaspedTime >= terminalCharOutputThreshold) {
+
+		TerminalOutputTextMG.updateTerminalText(terminalText,"Hello From Canada! My name is Shahroz and I am the developer of this game! Hopefully I can find a girlfriend!" ,charHidingRec, terminalText.style)	
 
 		elaspedTime = 0
 	}	
