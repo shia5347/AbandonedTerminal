@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { TerminalOutputTextMG } from './TerminalOutputTextMG'
+import { TerminalOutputTextMG, TerminalInputTextMG } from './TerminalTextMG'
 
 var FontFaceObserver = require('fontfaceobserver')
 
@@ -47,7 +47,7 @@ inputBar.beginFill('#000000')
 inputBar.drawRect(32,HEIGHT-BAR_HEIGHT-16,BAR_WIDTH,BAR_HEIGHT)
 
 //Terminal text
-let terminalText: PIXI.Text = new PIXI.Text("", {
+let terminalOutText: PIXI.Text = new PIXI.Text("", {
 
 	fontFamily: "pixelFont",
 	fontSize: 24,
@@ -58,28 +58,46 @@ let terminalText: PIXI.Text = new PIXI.Text("", {
 
 });
 
-let charHidingRec = new PIXI.Graphics() //This rectangle will slowly show the characters of the terminal text one by one
+let terminalInText: PIXI.Text = new PIXI.Text("> ", {
+
+	fontFamily: "pixelFont",
+	fontSize: 24,
+	fill: '#12FF00FF',
+	wordWrap: true,
+	wordWrapWidth: 501 ,
+	lineHeight: 42 
+
+});
+
+
+let outCharHidingRec = new PIXI.Graphics() //This rectangle will slowly show the characters of the terminal text one by one for the output
+let inCharHidingRec = new PIXI.Graphics() //This rectangle will slowly show the characters of the terminal text one by one for the input
 
 const textOffsetX = 42
 const textOffsetY = 42
 
-charHidingRec.beginFill('#001521')
-charHidingRec.drawRect(textOffsetX,textOffsetY,SCREEN_WIDTH,33)
-charHidingRec.endFill()
+outCharHidingRec.beginFill('#001521')
+outCharHidingRec.drawRect(textOffsetX,textOffsetY,SCREEN_WIDTH,33)
+outCharHidingRec.endFill()
 
-terminalText.position.set(textOffsetX,textOffsetY)
+terminalOutText.position.set(textOffsetX,textOffsetY)
+terminalInText.position.set(textOffsetX,420)
 
 //terminalText.text = "Sinosodial OS v1.0. Please wait..." 
 const newLineDist: number = textOffsetY //Distance between everyline on the terminal
 
 //Terminal text options
-terminalText.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST
-terminalText.resolution = 8 
+terminalOutText.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST
+terminalInText.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST
+
+terminalOutText.resolution = 8 
+terminalInText.resolution = 8 
 
 //Add all the components to the game
-app.stage.addChild(terminalText)
-app.stage.addChild(charHidingRec)
+app.stage.addChild(terminalOutText)
+app.stage.addChild(outCharHidingRec)
 app.stage.addChild(inputBar)
+app.stage.addChild(terminalInText)
 
 const terminalCharOutputThreshold: number = 1/10 //1/20 seconds
 var elaspedTime = 0
@@ -92,7 +110,7 @@ app.ticker.add((delta) => {
 	elaspedTime += seconds
 	if(elaspedTime >= terminalCharOutputThreshold) {
 
-		TerminalOutputTextMG.updateTerminalText(terminalText,"Hello From Canada! My name is Shahroz and I am the developer of this game! Hopefully I can find a girlfriend!" ,charHidingRec, terminalText.style)	
+		TerminalOutputTextMG.updateTerminalText(terminalOutText,"Hello From Canada! My name is Shahroz and I am the developer of this game! Hopefully I can find a job!" ,outCharHidingRec, terminalOutText.style)	
 
 		elaspedTime = 0
 	}	
