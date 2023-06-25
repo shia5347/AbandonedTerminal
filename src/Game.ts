@@ -102,6 +102,8 @@ app.stage.addChild(terminalInText)
 const terminalCharOutputThreshold: number = 1/10 //1/20 seconds
 var elaspedTime = 0
 
+TerminalInputTextMG.initializeTerminalInput()
+
 
 app.ticker.add((delta) => {
 

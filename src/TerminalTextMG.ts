@@ -56,17 +56,92 @@ public static updateTerminalText(pixiText: PIXI.Text,text: string,charHidingRec:
 
 }
 
+type keyboardPressAndRelease = () => void
+class Key {
+	value!: string
+	isDown: boolean
+	isUp: boolean
+	press!: undefined | keyboardPressAndRelease
+	release!: undefined | keyboardPressAndRelease
+
+	constructor(value: string) {
+		this.isDown = false
+		this.isUp = true
+		this.value = value
+	}
+
+	downHandler = (e: KeyboardEvent): void => {
+		if(e.key.toLowerCase() === this.value.toLowerCase()) {
+			if(this.isUp && this.press !== undefined) {
+				this.press()					
+			}
+
+			this.isDown = true
+			this.isUp = false
+			e.preventDefault()
+		}
+	}
+
+	upHandler = (e: KeyboardEvent): void => {
+		if(e.key.toLowerCase() === this.value.toLowerCase()) {
+			if(this.isDown && this.release !== undefined) {
+				this.release()	
+			}
+
+			this.isDown = false
+			this.isUp = true
+			e.preventDefault()
+		}	
+	}
+	
+
+
+}
+
 export class TerminalInputTextMG {
 	
 	private static counter: number = 0
+	private constructor() {}	
 
-	private constructor() {
-		
+	static keys: Key[] = []
+	static fillKeysArray = (): void => {
+		for(var i = 65; i <= 90; i++) {
+			const letter = String.fromCharCode(i)				
+			this.keys.push(new Key(letter))
+		}
+
+	}
+	
+	static attachEventListeners = (): void => {
+		for(var i = 0; i < this.keys.length; i++)  {
+			window.addEventListener("keydown",this.keys[i].downHandler,false)
+			window.addEventListener("keyup",this.keys[i].upHandler,false)
+		}
 	}	
 
-	public static handleInput(pixiText: PIXI.Text, text: string): void {
-		pixiText.text += text[this.counter]	
-		this.counter++
+	static detachEventListeners = (): void => {
+		for(var i = 0; i < this.keys.length; i++) {
+			window.removeEventListener("keydown",this.keys[i].downHandler)
+			window.removeEventListener("keyup",this.keys[i].upHandler)
+		}
+	}
+
+	static attachPressAndReleaseFunctions = (): void => {
+		this.keys.forEach((element) => {
+			element.press = (): void => {
+				console.log("Press: " + element.value)
+			}
+
+			element.release = (): void => {
+				console.log("Release: " + element.value)
+			}
+		})
+	}
+
+	static initializeTerminalInput = (): void => {
+		this.fillKeysArray()
+		this.attachPressAndReleaseFunctions()
+		this.attachEventListeners()	
 	}
 
 
@@ -75,4 +150,5 @@ export class TerminalInputTextMG {
 
 
 
+	
 
