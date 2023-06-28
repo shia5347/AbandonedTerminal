@@ -58,7 +58,7 @@ let terminalOutText: PIXI.Text = new PIXI.Text("", {
 
 });
 
-let terminalInText: PIXI.Text = new PIXI.Text("> ", {
+let terminalInText: PIXI.Text = new PIXI.Text(">", {
 
 	fontFamily: "pixelFont",
 	fontSize: 24,
@@ -102,7 +102,7 @@ app.stage.addChild(terminalInText)
 const terminalCharOutputThreshold: number = 1/10 //1/20 seconds
 var elaspedTime = 0
 
-TerminalInputTextMG.initializeTerminalInput()
+TerminalInputTextMG.initializeTerminalInput(terminalInText)
 
 
 app.ticker.add((delta) => {
@@ -111,7 +111,7 @@ app.ticker.add((delta) => {
 
 	elaspedTime += seconds
 	if(elaspedTime >= terminalCharOutputThreshold) {
-
+		
 		TerminalOutputTextMG.updateTerminalText(terminalOutText,"Hello From Canada! My name is Shahroz and I am the developer of this game! Hopefully I can find a job!" ,outCharHidingRec, terminalOutText.style)	
 
 		elaspedTime = 0
