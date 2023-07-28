@@ -24,6 +24,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const PIXI = __importStar(require("pixi.js"));
+const TerminalTextMG_1 = require("./TerminalTextMG");
 var FontFaceObserver = require('fontfaceobserver');
 //See if font family exists
 var font = new FontFaceObserver('pixelFont');
@@ -37,15 +38,17 @@ const HEIGHT = 480;
 const BAR_WIDTH = WIDTH - 64;
 const BAR_HEIGHT = 47;
 //Window size
-const SCREEN_WIDTH = 1280;
-const SCREEN_HEIGHT = 960;
+const SCREEN_WIDTH = 1024;
+const SCREEN_HEIGHT = 768;
 //App settings
 const app = new PIXI.Application({ width: SCREEN_WIDTH, height: SCREEN_HEIGHT, background: '#001521', resolution: window.devicePixelRatio, antialias: false });
 PIXI.settings.ROUND_PIXELS = true;
+PIXI.settings.RESOLUTION = 4;
 //Scaling
 const scaleX = SCREEN_WIDTH / WIDTH;
 const scaleY = SCREEN_HEIGHT / HEIGHT;
 const scale = Math.min(scaleX, scaleY);
+app.stage.scale.set(scale);
 const canvas = document.getElementById('pixi-canvas');
 if (canvas == null) {
     console.log("Canvas for pixi js is null!");
@@ -53,19 +56,69 @@ if (canvas == null) {
 else {
     canvas.appendChild(app.view);
 }
-var obj = new PIXI.Graphics();
-obj.scale.set(scale);
-obj.beginFill('#000000');
-obj.drawRect(32, HEIGHT - BAR_HEIGHT - 16, BAR_WIDTH, BAR_HEIGHT);
-app.stage.addChild(obj);
-//Fonts
-let text = new PIXI.Text("Testing", {
+var inputBar = new PIXI.Graphics();
+inputBar.beginFill('#000000');
+inputBar.drawRect(32, HEIGHT - BAR_HEIGHT - 16, BAR_WIDTH, BAR_HEIGHT);
+//Terminal text
+let terminalOutText = new PIXI.Text("", {
     fontFamily: "pixelFont",
-    fontSize: 24 * scale,
+    fontSize: 24,
     fill: '#12FF00FF',
+    wordWrap: true,
+    wordWrapWidth: 501,
+    lineHeight: 42
 });
-text.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
-app.stage.addChild(text);
+let terminalInText = new PIXI.Text(">", {
+    fontFamily: "pixelFont",
+    fontSize: 24,
+    fill: '#12FF00FF',
+    wordWrap: true,
+    wordWrapWidth: 501,
+    lineHeight: 42
+});
+let outCharHidingRec = new PIXI.Graphics(); //This rectangle will slowly show the characters of the terminal text one by one for the output
+let inCharHidingRec = new PIXI.Graphics(); //This rectangle will slowly show the characters of the terminal text one by one for the input
+const textOffsetX = 42;
+const textOffsetY = 42;
+outCharHidingRec.beginFill('#001521');
+outCharHidingRec.drawRect(textOffsetX, textOffsetY, SCREEN_WIDTH, 33);
+outCharHidingRec.endFill();
+terminalOutText.position.set(textOffsetX, textOffsetY);
+terminalInText.position.set(textOffsetX, 420);
+//terminalText.text = "Sinosodial OS v1.0. Please wait..." 
+const newLineDist = textOffsetY; //Distance between everyline on the terminal
+//Terminal text options
+terminalOutText.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
+terminalInText.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
+terminalOutText.resolution = 8;
+terminalInText.resolution = 8;
+//Add all the components to the game
+app.stage.addChild(terminalOutText);
+app.stage.addChild(outCharHidingRec);
+app.stage.addChild(inputBar);
+app.stage.addChild(terminalInText);
+const terminalCharOutputThreshold = 1 / 10; //1/20 seconds
+var checkBootSoundFinishedDelay = 33.8;
+var elaspedTime = 0;
+var elaspedTime2 = 0;
+TerminalTextMG_1.TerminalInputTextMG.initializeTerminalInput(terminalInText);
+TerminalTextMG_1.TerminalOutputTextMG.playComputerStartupSound();
+var finishedPlayingStartupSound = false;
 app.ticker.add((delta) => {
+    const seconds = delta * 0.01;
+    elaspedTime += seconds;
+    elaspedTime2 += seconds;
+    if (elaspedTime >= terminalCharOutputThreshold) {
+        TerminalTextMG_1.TerminalOutputTextMG.updateTerminalText(terminalOutText, "Sinusodial OS V1.0\nLoading firmware...\nLoading drivers...\nDone. You are admin. Please operate responsibly!", outCharHidingRec, terminalOutText.style);
+        elaspedTime = 0;
+    }
+    if (finishedPlayingStartupSound === false) {
+        if (elaspedTime2 > checkBootSoundFinishedDelay) {
+            checkBootSoundFinishedDelay = 0;
+            elaspedTime2 = 0;
+            TerminalTextMG_1.TerminalOutputTextMG.playComputerAmbience();
+            finishedPlayingStartupSound = true;
+        }
+    }
 });
 //# sourceMappingURL=Game.js.map

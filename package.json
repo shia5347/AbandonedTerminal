@@ -16,6 +16,7 @@
     "webpack-cli": "^5.1.1"
   },
   "dependencies": {
+    "@pixi/sound": "^5.2.0",
     "@types/css-font-loading-module": "^0.0.8",
     "@types/pixi.js": "^5.0.0",
     "fontfaceobserver": "^2.3.0",

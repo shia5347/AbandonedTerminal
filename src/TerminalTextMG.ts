@@ -1,6 +1,44 @@
 import * as PIXI from 'pixi.js';
+import * as SOUND from '@pixi/sound'
 
 const newLineDist: number = 42 //Distance between everyline on the terminal
+const outputSound: SOUND.Sound = SOUND.Sound.from('../assets/Sounds/TerminalOutput.wav') //For each character output
+export const computerStartupSound: SOUND.Sound = SOUND.Sound.from('../assets/Sounds/ComputerStartUp.wav')
+const computerAmbience: SOUND.Sound = SOUND.Sound.from('../assets/Sounds/ComputerAmbienceLoop.wav')
+SOUND.sound.add('keySounds', {
+	
+	url: '../assets/Sounds/keys.mp3',
+	sprites: {
+		key1: {start: 1.110, end: 1.277},
+		key2: {start: 1.547, end: 1.737},
+		key3: {start: 3.577, end: 3.730},
+		key4: {start: 5.161, end: 5.358}
+	},
+
+})
+
+
+SOUND.sound.add('Backspace', {
+	url: '../assets/Sounds/backspace.mp3'
+})
+
+SOUND.sound.add('Spacebar', {
+	url: '../assets/Sounds/spacebar.mp3'
+})
+
+SOUND.Sound.from({
+	
+	autoPlay: true,
+	complete: function() {
+
+	}
+
+})
+
+computerStartupSound.volume = 0.5
+computerAmbience.volume = 0.2
+
+computerAmbience.loop = true
 
 //Terminal output text manager
 export class TerminalOutputTextMG {
@@ -14,6 +52,24 @@ private constructor() {
 
 public static resetLineIndexPointer(): void {
 	this.lineIndex = 0
+}
+
+public static playComputerStartupSound(): void {
+	computerStartupSound.play()
+}
+
+/*
+public static computerStartupSoundFinished(): boolean {
+	if(computerStartupSound.isPlaying == false) {
+		return true
+	}
+
+	return false
+}
+*/
+
+public static playComputerAmbience(): void {
+	computerAmbience.play()
 }
 
 public static updateTerminalText(pixiText: PIXI.Text,text: string,charHidingRec: PIXI.Graphics, textStyle: PIXI.TextStyle): void {
@@ -32,6 +88,12 @@ public static updateTerminalText(pixiText: PIXI.Text,text: string,charHidingRec:
 	if(this.counter < lineLength) {
 
 		charHidingRec.x += PIXI.TextMetrics.measureText("A",pixiText.style).width //Only works for monospaced fonts
+
+		if(fullText[this.lineIndex][this.counter] !== " ") {
+		outputSound.play()
+		}
+
+
 		this.counter++
 
 	} else {
@@ -46,8 +108,9 @@ public static updateTerminalText(pixiText: PIXI.Text,text: string,charHidingRec:
 		charHidingRec.x = 0 
 		charHidingRec.y += newLineDist //Move the rectangle to a new line		
 		pixiText.text = pixiText.text + "\n" + this.concatenatedStr
-
+		
 		pixiText.updateText(true)
+
 		}
 
 
@@ -83,6 +146,10 @@ class Key {
 
 			this.isDown = true
 			this.isUp = false
+			
+
+
+
 			e.preventDefault()
 		}
 	}
@@ -93,6 +160,39 @@ class Key {
 				this.release()	
 			}
 
+			if(this.value==="Backspace") {
+				SOUND.sound.play('Backspace');
+			}
+
+			for(var i = 65; i <= 90; i++) {
+			const letter = String.fromCharCode(i)				
+			if(this.value.toLowerCase() === letter.toLowerCase()) {
+				var rand: number = this.getRandomNumber(4)
+				console.log(rand)
+
+				if(rand === 0) {
+				SOUND.sound.play('keySounds','key1')
+				}
+
+				if(rand === 1) {
+				SOUND.sound.play('keySounds','key2')
+				} 
+
+				if(rand === 2) {
+				SOUND.sound.play('keySounds','key3')
+				}
+
+				if(rand === 3) {
+				SOUND.sound.play('keySounds','key4')
+				}
+
+			}
+
+		}
+
+			if(this.value==" ") {
+				SOUND.sound.play('Spacebar');
+			}
 			this.isDown = false
 			this.isUp = true
 			e.preventDefault()
@@ -110,6 +210,10 @@ class Key {
 		this.pixiTextObj.text = tempText
 		}
 
+	}
+
+	getRandomNumber = (max: number): number => {
+		return Math.floor(Math.random() * max) 
 	}
 
 }

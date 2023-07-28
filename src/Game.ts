@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { TerminalOutputTextMG, TerminalInputTextMG } from './TerminalTextMG'
+import { TerminalOutputTextMG, TerminalInputTextMG, computerStartupSound } from './TerminalTextMG'
 
 var FontFaceObserver = require('fontfaceobserver')
 
@@ -100,23 +100,35 @@ app.stage.addChild(inputBar)
 app.stage.addChild(terminalInText)
 
 const terminalCharOutputThreshold: number = 1/10 //1/20 seconds
+var checkBootSoundFinishedDelay: number = 33.8 
+
 var elaspedTime = 0
+var elaspedTime2 = 0
 
 TerminalInputTextMG.initializeTerminalInput(terminalInText)
+TerminalOutputTextMG.playComputerStartupSound()
 
+var finishedPlayingStartupSound: boolean = false
 
 app.ticker.add((delta) => {
 
 	const seconds = delta * 0.01
 
 	elaspedTime += seconds
+	elaspedTime2 += seconds
 	if(elaspedTime >= terminalCharOutputThreshold) {
-		
-		TerminalOutputTextMG.updateTerminalText(terminalOutText,"Hello From Canada! My name is Shahroz and I am the developer of this game! Hopefully I can find a job!" ,outCharHidingRec, terminalOutText.style)	
-
+		TerminalOutputTextMG.updateTerminalText(terminalOutText,"Sinusodial OS V1.0\nLoading firmware...\nLoading drivers...\nDone. You are admin. Please operate responsibly!" ,outCharHidingRec, terminalOutText.style)	
 		elaspedTime = 0
 	}	
 
+	if(finishedPlayingStartupSound === false) {
+	if(elaspedTime2 > checkBootSoundFinishedDelay) {
+		checkBootSoundFinishedDelay = 0
+		elaspedTime2 = 0
+		TerminalOutputTextMG.playComputerAmbience()	
+		finishedPlayingStartupSound = true
+	}
+	}
 
 
 });
